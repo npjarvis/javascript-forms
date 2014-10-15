@@ -10,8 +10,36 @@
 * We need to populate the class standing select based on the standings array
 * and add an event listener for the form's submit event
 * */
-function onReady() {
-    var standings = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Super Senior!', 'Super Super Senior!'];
+// Javascript objects are not classes but are essentially are hashmaps, just like arrays
+// code is the key, displayText is the value
+ function onReady() {
+     // now contains array objects, each with a key and a value
+    var standings = [
+        {
+            code: 'f',
+            displayText: 'Freshman'
+        },
+        {
+          code: 's',
+          displayText: 'Sophomore'
+        },
+        {
+            code: 'j',
+            displayText: 'Junior'
+        },
+        {
+            code: 'sn',
+            displayText: 'Senior'
+        },
+        {
+            code: 'ss',
+            displayText: 'Super Senior'
+        },
+        {
+            code: 'sss',
+            displayText: "Super Super Senior!"
+        }
+    ];
     // get reference to overall form
     var personForm = document.getElementById('person-form');
 
@@ -24,9 +52,9 @@ function onReady() {
     for (idx=0; idx<standings.length; ++idx) {
         //pass name of element you want to create, such as 'option'
         option = document.createElement('option');
-        option.innerHTML = standings[idx];
+        option.innerHTML = standings[idx].displayText;
         // need to give it a value before you append, computer sees 1, 2,3,4,5,6 while user sees freshman, sopho+more
-        option.value = idx + 1;
+        option.value = standings[idx].code;
         standingsSelect.appendChild(option);
     }
 
@@ -45,7 +73,7 @@ function onReady() {
 // validateForm passed parameter, 'this' refers to whatever element raised the event, in this case refers
 // to the form element
 //if statement returns false or true
-// tells browsers of different type to return preventDefault()
+// tells browsers of different type to return preventDefault(), evt.preventDefault(); is for newer browser
  function onSubmit(evt) {
     evt.returnValue = validateForm(this);
     if (!evt.returnValue && evt.preventDefault) {
@@ -66,12 +94,20 @@ function validateForm(form) {
     // how to test?, must iterate over array and then call validateRequiredField
     var idx;
     var formValid = true;
-    for(idx=0; idx<requiredFields.length; ++idx) {
+    for(idx = 0; idx < requiredFields.length; ++idx) {
         // requiredFields[idx] tells the computer to pass the current value into validateRequiredFields and
         // then checks to see if true
         // if validateRequiredField is true formValid will be true, if false formValid will flip to false and be returned
+        // this trick returns false if ANY required field is false
         formValid &= validateRequiredField(form.elements[requiredFields[idx]]);
     }
+
+    if (!formValid) {
+        var errMsg = document.getElementById('error-message');
+        errMsg.innerHTML = 'FILL OUT REQUIRED FIELDS';
+        errMsg.style.display = 'block';
+    }
+    return formValid;
 
 } //validateForm()
 
